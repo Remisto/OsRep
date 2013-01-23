@@ -1,0 +1,16 @@
+#include <efi.h>
+#include <efilib.h>
+#define pageSize 4096
+
+EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *systab){
+	InitializeLib(handle, systab);
+	EFI_BOOT_SERVICES* bs = systab->BootServices;
+	EFI_STATUS status;
+	EFI_MEMORY_DESCRIPTOR *memMap;
+	UINTN memHandle, descSize, mapKey, memMapSize;
+	UINT32 descVers;
+	EFI_MEMORY_TYPE memType = EfiLoaderData;
+
+	
+	return EFI_SUCCESS;
+}
