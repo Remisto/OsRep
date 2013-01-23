@@ -10,7 +10,13 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *systab){
 	UINTN memHandle, descSize, mapKey, memMapSize;
 	UINT32 descVers;
 	EFI_MEMORY_TYPE memType = EfiLoaderData;
-
+	callStats = uefi_call_wrapper(systab->BootService->GetMemoryMap, 5, &memMapSize, memMap, &mapKey, &descSize, &descVers);
+	if(callStats != EFI_BUFFER_TOO_SMALL)
+	{
+		Print(L"Error: Cant GetMemoryMap.\n");
+	}else{
+		Print(L"Somthing works...\n");
+	}
 	
 	return EFI_SUCCESS;
 }
