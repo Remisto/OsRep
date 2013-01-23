@@ -9,6 +9,7 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *systab){
 	EFI_MEMORY_DESCRIPTOR *memMap;
 	UINTN memHandle, descSize, mapKey, memMapSize;
 	UINT32 descVers;
+	UINT64 bytesCount;
 	EFI_MEMORY_TYPE memType = EfiLoaderData;
 	Print(L"Getting Memory Map... ");
 	GetMemoryStats = uefi_call_wrapper(systab->BootService->GetMemoryMap, 5, &memMapSize, memMap, &mapKey, &descSize, &descVers);
@@ -20,11 +21,27 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *systab){
 		AllocateStats = uefi_call_wrapper(systab->BootService->AllocatePool, 3, memType, memMapSize, &memMap);  
 		if(AllocateStats != EFI_SUCCESS)
 		{
-			Print(L"Error: Cant AllocatePool\n");
+			Print(L"Error: Cant AllocatePool.\n");
 		}else{
-			Print(L"Success!\n");
+			Print(L"Success!\nReading Memory Map... ");
+			status = uefi_call_wrapper(systab->BootService->GetMemoryMap, 5, &memMapSize, memMap, &mapKey, &descSize, &descVers);  
+			if(status != EFI_SUCCESS)
+			{
+				Print(L"Error: Cant GetMemoryMap.\n");
+			}else{
+				Print(L"Success!\nCounting... ");
+				int i=0;
+				while(i<mmap_size/(sizeof(EFI_MEMORY_DESCRIPTOR))){
+					if((mm[i].Type == EfiBootServicesCode)||(mm[i].Type == EfiBootServicesData)||(mm[i].Type == EfiConventionalMemory)||(mm[i].Type == EfiACPIReclaimMemory)		){
+						bytesCount+=mm[i].NumberOfPages;
+					}
+					i++;
+				}
+				bytesCount*=pageSize;
+				Print(L"Success!\n\nAvailable memory: %d bytes.\n",bytesCount);
+				FreeStats = uefi_call_wrapper(systab->BootService->FreePool, 1, &memMap);	
+			}		
 		}
 	}
-	
 	return EFI_SUCCESS;
 }
