@@ -1,4 +1,3 @@
-$mb = 256; #Число мегабайт, которое мы считаем "Большим"
 sub help{
 	print "\tYou must declare output file and at least one input file.\n";
 	print "\tFor example: output.txt first.txt second.txt third.txt";
@@ -18,21 +17,24 @@ $i=0;
 @numbers[0]=0;
 while($line = shift)
 {
-	if((-r $line) && (int(-s $line)<($mb*1048576)))#-r - доступен ли файл для чтения. -s - размер файла.
+	if((-r $line))#-r - доступен ли файл для чтения. -s - размер файла.
 	{
-		open(FILE, $line) or die "\tCan't open ".$line;
-		$str="";
-		while(!eof(FILE))
-		{
-			read FILE, $x, 1 or die "\tCant'r read symbol in ".$line;
-			if($x!~/\s/){$str.=$x;}
-			else{
-				if($str=~/^\d+$/){ $numbers[$i] = $str or die "\tCan't add new element to array."; $i++; }
-				if($i<0){ print "\tArray overflow. We apologize."; exit;}
-				$str="";
+		eval{
+			open(FILE, $line) or die "\tCan't open ".$line;
+			$str="";
+			while(!eof(FILE))
+			{
+				read FILE, $x, 1 or die "\tCant'r read symbol in ".$line;
+				if($x!~/\s/){$str.=$x;}
+				else{
+					if($str=~/^\d+$/){ $numbers[$i] = $str or die "\tCan't add new element to array."; $i++; }
+					if($i<0){ print "\tArray overflow. We apologize."; exit;}
+					$str="";
+				}
 			}
+			close FILE;
 		}
-		close FILE;
+		warn $@ if $@;
 	} else {print "\tFile ".$line." not available for read or file size is too much."; exit; }
 }
 
