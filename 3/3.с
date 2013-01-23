@@ -10,12 +10,20 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *systab){
 	UINTN memHandle, descSize, mapKey, memMapSize;
 	UINT32 descVers;
 	EFI_MEMORY_TYPE memType = EfiLoaderData;
-	callStats = uefi_call_wrapper(systab->BootService->GetMemoryMap, 5, &memMapSize, memMap, &mapKey, &descSize, &descVers);
-	if(callStats != EFI_BUFFER_TOO_SMALL)
+	Print(L"Getting Memory Map... ");
+	GetMemoryStats = uefi_call_wrapper(systab->BootService->GetMemoryMap, 5, &memMapSize, memMap, &mapKey, &descSize, &descVers);
+	if(GetMemoryStats != EFI_BUFFER_TOO_SMALL)
 	{
 		Print(L"Error: Cant GetMemoryMap.\n");
 	}else{
-		Print(L"Somthing works...\n");
+		Print(L"Success!\nAllocation Pool... ");
+		AllocateStats = uefi_call_wrapper(systab->BootService->AllocatePool, 3, memType, memMapSize, &memMap);  
+		if(AllocateStats != EFI_SUCCESS)
+		{
+			Print(L"Error: Cant AllocatePool\n");
+		}else{
+			Print(L"Success!\n");
+		}
 	}
 	
 	return EFI_SUCCESS;
