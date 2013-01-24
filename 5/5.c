@@ -2,6 +2,7 @@
 #include <ucontext.h>
 #include <sys/time.h>
 
+int Interval 100;  
 int NumberOfContexts = 10;
 int StackSize = 1024;
 
@@ -25,6 +26,14 @@ int main(){
 	for (i = 1; i < NumberOfContexts; i++) {
 		MyTreads[i].ContextStatus = 0;//Free Tread
 	}
+	struct itimerval AlarmInterval;
+	
+	AlarmInterval.it_interval.tv_sec = 0;
+	AlarmInterval.it_interval.tv_usec = Interval*1000;
+	AlarmInterval.it_value.tv_sec = 0;
+	AlarmInterval.it_value.tv_usec = Interval*1000;
+	setitimer(ITIMER_REAL, &AlarmInterval, 0);
+	
 	
 	return 0;
 }
