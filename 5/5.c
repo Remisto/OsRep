@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <ucontext.h>
 #include <sys/time.h>
-#define NumberOfContexts 10;
-#define MyInterval 100
+#define NumberOfContexts 10
+#define StackSize 1024
 
 int thread_create(void(*)(), int);
 void thread_exit();
@@ -11,8 +11,6 @@ void thread_sleep(int);
 void my_thread(int);
 void schedul_function(int);
 
-int StackSize = 1024;
-int TreadId[NumberOfContexts];
 struct context_options{
     int ContextId;
     int ContextStatus;
@@ -21,13 +19,15 @@ struct context_options{
 	char ExitStack[StackSize];
 	ucontext_t Context;
 	ucontext_t ExitContext;
-};
+} MyTreads[NumberOfContexts];
 
 ucontext_t SchedulerContext;
-context_options MyTreads[NumberOfContexts];
 int CurrentContextId = 0;
+int TreadId[NumberOfContexts];
+int MyInterval 100;
+int tnumber;
 
-int thread_create(void(*func)(), int tnumber){
+int thread_create(void(*func)()){
 	int id;
 	for(id = 1; id < NumberOfContexts; id++){
 		if(MyTreads[id].ContextStatus == 0){
@@ -58,11 +58,11 @@ void thread_exit(){
 	MyTreads[CurrentContextId].ContextStatus = 0;
 }
 
-void thread_wait(int id){
+void thread_wait(int zxc){
 	struct timespec nanotime;
 	nanotime.tv_sec = 0;
 	nanotime.tv_nsec = 10000*MyInterval;
-	while (MyTreads[id].ContextStatus != 0) {
+	while (MyTreads[zxc].ContextStatus != 0) {
 		nanosleep(&nanotime, 0);
 	}
 }
@@ -128,7 +128,8 @@ int main(){
 	signal(SIGALRM, schedul_function); 
 	
 	for(i=0; i<10; i++){
-		int TreadId[i] = thread_create(my_thread, i);
+		tnumber = i;
+		int TreadId[i] = thread_create(my_thread(i));
 		printf("Thread %d created\n", i);
 	}
 	
