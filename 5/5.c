@@ -4,7 +4,7 @@
 #include <signal.h>
 
 int NumberOfContexts = 10;
-int StackSize;
+int StackSize = 1024;
 
 struct ContextOptions{
     int ContextId;
@@ -12,6 +12,7 @@ struct ContextOptions{
     ucontext_t Context;
     int ContextSleepTime;
 };
+ucontext_t SchedulerContext;
 
 int main(){
 	
