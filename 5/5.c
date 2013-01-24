@@ -20,6 +20,9 @@ ucontext_t SchedulerContext;
 context_options MyTreads[NumberOfContexts];
 int CurrentContextId = 0;
 
+void schedul_function(int signal){
+	int CurrentId, NextId = 0;
+}	
 
 int main(){
 	int i;
@@ -34,6 +37,7 @@ int main(){
 	AlarmInterval.it_value.tv_usec = Interval*1000;
 	setitimer(ITIMER_REAL, &AlarmInterval, 0);
 	
+	signal(SIGALRM, schedul_function); 
 	
 	return 0;
 }
