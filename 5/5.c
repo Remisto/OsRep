@@ -51,6 +51,31 @@ void thread_exit(){
 	MyTreads[CurrentContextId].ContextStatus = 0;
 }
 
+void thread_wait(int id){
+	struct timespec nanotime;
+	nanotime.tv_sec = 0;
+	nanotime.tv_nsec = 10000*Interval;
+	while (MyTreads[id].ContextStatus != 0) {
+		nanosleep(&nanotime, 0);
+	}
+}
+
+void thread_sleep(int counts) {
+	MyTreads[CurrentContextId].ContextStatus = 2;
+	MyTreads[CurrentContextId].ContextSleepTime = counts;
+	int TempContextId = CurrentContextId;
+	CurrentContextId = 0;
+	swapcontext(&MyTreads[TempContextId].Context, &SchedulerContext);
+}
+
+void my_thread(int qwe) {
+	int i;
+	for (i=0; i<10; i++) {
+		printf("Thread %d...\n",qwe);
+		thread_sleep(4+qwe);
+	}
+}
+
 void schedul_function(int signal){
 	int NextId = 0;
 	int CurrentId = 0;
@@ -98,6 +123,11 @@ int main(){
 	for(i=0; i<10; i++){
 		int TreadId[i] = thread_create(my_thread, i);
 		printf("Thread %d created\n", i);
+	}
+	
+	for(i=0; i<10; i++){
+		thread_wait(TreadId[i]);
+		printf("Thread %d stoped\n", tid0);
 	}
 	
 	return 0;
