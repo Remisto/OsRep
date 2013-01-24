@@ -1,9 +1,16 @@
 #include <stdio.h>
 #include <ucontext.h>
 #include <sys/time.h>
-#define NumberOfContexts = 10;
+#define NumberOfContexts 10;
+#define MyInterval 100
 
-int Interval 100;  
+int thread_create(void(*)(), int);
+void thread_exit();
+void thread_wait(int);
+void thread_sleep(int);
+void my_thread(int);
+void schedul_function(int);
+
 int StackSize = 1024;
 int TreadId[NumberOfContexts];
 struct context_options{
@@ -54,13 +61,13 @@ void thread_exit(){
 void thread_wait(int id){
 	struct timespec nanotime;
 	nanotime.tv_sec = 0;
-	nanotime.tv_nsec = 10000*Interval;
+	nanotime.tv_nsec = 10000*MyInterval;
 	while (MyTreads[id].ContextStatus != 0) {
 		nanosleep(&nanotime, 0);
 	}
 }
 
-void thread_sleep(int counts) {
+void thread_sleep(int counts){
 	MyTreads[CurrentContextId].ContextStatus = 2;
 	MyTreads[CurrentContextId].ContextSleepTime = counts;
 	int TempContextId = CurrentContextId;
@@ -68,9 +75,9 @@ void thread_sleep(int counts) {
 	swapcontext(&MyTreads[TempContextId].Context, &SchedulerContext);
 }
 
-void my_thread(int qwe) {
+void my_thread(int qwe){
 	int i;
-	for (i=0; i<10; i++) {
+	for (i=0; i<10; i++){
 		printf("Thread %d...\n",qwe);
 		thread_sleep(4+qwe);
 	}
@@ -113,9 +120,9 @@ int main(){
 	struct itimerval AlarmInterval;
 	
 	AlarmInterval.it_interval.tv_sec = 0;
-	AlarmInterval.it_interval.tv_usec = Interval*1000;
+	AlarmInterval.it_interval.tv_usec = MyInterval*1000;
 	AlarmInterval.it_value.tv_sec = 0;
-	AlarmInterval.it_value.tv_usec = Interval*1000;
+	AlarmInterval.it_value.tv_usec = MyInterval*1000;
 	setitimer(ITIMER_REAL, &AlarmInterval, 0);
 	
 	signal(SIGALRM, schedul_function); 
@@ -127,7 +134,7 @@ int main(){
 	
 	for(i=0; i<10; i++){
 		thread_wait(TreadId[i]);
-		printf("Thread %d stoped\n", tid0);
+		printf("Thread %d stoped\n", TreadId[i]);
 	}
 	
 	return 0;
