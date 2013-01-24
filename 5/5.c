@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <ucontext.h>
 #include <sys/time.h>
+#define NumberOfContexts = 10;
 
 int Interval 100;  
-int NumberOfContexts = 10;
 int StackSize = 1024;
 int TreadId[NumberOfContexts];
 struct context_options{
