@@ -1,31 +1,26 @@
 #include <stdio.h>
 #include <ucontext.h>
 #include <sys/time.h>
-#define NumberOfContexts 10
-#define StackSize 1024
+#include <stdlib.h>
+#include <poll.h>
 
-int thread_create(void(*)(), int);
-void thread_exit();
-void thread_wait(int);
-void thread_sleep(int);
-void my_thread(int);
-void schedul_function(int);
+#define NumberOfContexts 2
+#define StackSize 0xFFFFF
+int MyInterval = 100;
 
 struct context_options{
-    int ContextId;
-    int ContextStatus;
-    int ContextSleepTime;
+	int ContextId;
+	int ContextStatus;
+	int ContextSleepTime;
 	char Stack[StackSize];
 	char ExitStack[StackSize];
 	ucontext_t Context;
 	ucontext_t ExitContext;
 } MyTreads[NumberOfContexts];
 
+struct itimerval AlarmInterval;
 ucontext_t SchedulerContext;
 int CurrentContextId = 0;
-int TreadId[NumberOfContexts];
-int MyInterval 100;
-int tnumber;
 
 int thread_create(void(*func)()){
 	int id;
@@ -117,7 +112,6 @@ int main(){
 	for (i = 1; i < NumberOfContexts; i++){
 		MyTreads[i].ContextStatus = 0;//Free Tread
 	}
-	struct itimerval AlarmInterval;
 	
 	AlarmInterval.it_interval.tv_sec = 0;
 	AlarmInterval.it_interval.tv_usec = MyInterval*1000;
