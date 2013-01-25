@@ -5,7 +5,7 @@
 #include <poll.h>
 
 #define NumberOfContexts 10
-#define StackSize 0xFFFFF
+#define StackSize 4096
 int MyInterval = 100;
 int ThreadTicks = 15;
 int Thread1SleepTime = 3;
