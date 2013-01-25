@@ -22,7 +22,7 @@ struct itimerval AlarmInterval;
 ucontext_t SchedulerContext;
 int CurrentContextId = 0;
 
-int thread_create(void(*func)()){
+int thread_create(void(*f)()){
 	int id;
 	for(id = 1; id < NumberOfContexts; id++){
 		if(MyTreads[id].ContextStatus == 0){
@@ -44,9 +44,9 @@ int thread_create(void(*func)()){
 	MyTreads[id].Context.uc_stack.ss_sp = MyTreads[id].Stack;
 	MyTreads[id].Context.uc_stack.ss_size = sizeof(MyTreads[id].Stack);
 	MyTreads[id].Context.uc_link = &MyTreads[id].ExitContext;
-	makecontext(&MyTreads[id].Context, func(tnumber), 0);
+	makecontext(&MyTreads[id].Context, f, 0);
 
-	return thread_id;
+	return id;
 }
 
 void thread_exit(){
