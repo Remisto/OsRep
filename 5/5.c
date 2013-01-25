@@ -77,6 +77,13 @@ void my_thread(int qwe){
 	}
 }
 
+void swap_threads(int tid){
+	if (tid != 0){
+		CurrentContextId = tid;
+		swapcontext(&SchedulerContext, &MyTreads[CurrentContextId].Context);
+	}
+}
+
 void schedul_function(int signal){
 	int NextId = 0;
 	int CurrentId = 0;
@@ -100,10 +107,7 @@ void schedul_function(int signal){
 		CurrentId++;
 	}
 	
-	if (NextId != 0){
-		CurrentContextId = NextId;
-		swapcontext(&SchedulerContext, &MyTreads[CurrentContextId].Context);
-	}
+	swap_threads(NextId);
 }	
 
 int main(){
