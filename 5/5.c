@@ -121,12 +121,26 @@ void schedul_function(int signal){
 	swap_threads(NextId);
 }	
 
+void scheduler_init(ucontext_t * init_context)
+{
+	getcontext(init_context);
+	init_context->uc_stack.ss_sp=SignalStack;
+	init_context->uc_stack.ss_size=StackSize;
+	init_context->uc_stack.ss_flags=0;
+	sigemptyset(&init_context->uc_sigmask);
+	makecontext(init_context,schedul_function,0);
+}
+
 int main(){
 	int i;
 	for (i = 1; i < NumberOfContexts; i++){
 		MyTreads[i].ContextStatus = 0;//Free Tread
 	}
-	
+	SignalStack = malloc(StackSize);
+	if(SignalStack == NULL){
+     	printf("Cant malloc\n");
+       	exit(1);
+    }
 	int l = (MyInterval*1000)%1000000;
 	AlarmInterval.it_interval.tv_sec = 0;
 	AlarmInterval.it_interval.tv_usec = l;
@@ -138,7 +152,7 @@ int main(){
 	};
 	
 	signal(SIGALRM, schedul_function); 
-	
+	scheduler_init(&SchedulerContext);
 	int Thread1 = thread_create(thread_1);
 	int Thread2 = thread_create(thread_2);
 	thread_wait(Thread1);
