@@ -7,6 +7,9 @@
 #define NumberOfContexts 2
 #define StackSize 0xFFFFF
 int MyInterval = 100;
+int ThreadTicks = 15;
+int Thread1SleepTime = 3;
+int Thread2SleepTime = 5;
 
 struct context_options{
 	int ContextId;
@@ -69,11 +72,21 @@ void thread_sleep(int counts){
 	swapcontext(&MyTreads[TempContextId].Context, &SchedulerContext);
 }
 
-void my_thread(int qwe){
-	int i;
-	for (i=0; i<10; i++){
-		printf("Thread %d...\n",qwe);
-		thread_sleep(4+qwe);
+void thread_1() 
+{
+	for (int i=0; i<ThreadTicks; i++) 
+	{
+		printf("-Thread 1 working...\n");
+		my_thread_sleep(Thread1SleepTime);
+	}
+}
+
+void thread_2() 
+{
+	for (int i=0; i<ThreadTicks; i++) 
+	{
+		printf("--Thread 2 working...\n");
+		my_thread_sleep(Thread2SleepTime);
 	}
 }
 
