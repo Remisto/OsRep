@@ -72,21 +72,19 @@ void thread_sleep(int counts){
 	swapcontext(&MyTreads[TempContextId].Context, &SchedulerContext);
 }
 
-void thread_1() 
-{
-	for (int i=0; i<ThreadTicks; i++) 
-	{
+void thread_1(){
+	int i;
+	for(i=0; i<ThreadTicks; i++){
 		printf("-Thread 1 working...\n");
-		my_thread_sleep(Thread1SleepTime);
+		thread_sleep(Thread1SleepTime);
 	}
 }
 
-void thread_2() 
-{
-	for (int i=0; i<ThreadTicks; i++) 
-	{
+void thread_2(){
+	int i;
+	for (i=0; i<ThreadTicks; i++){
 		printf("--Thread 2 working...\n");
-		my_thread_sleep(Thread2SleepTime);
+		thread_sleep(Thread2SleepTime);
 	}
 }
 
@@ -129,10 +127,11 @@ int main(){
 		MyTreads[i].ContextStatus = 0;//Free Tread
 	}
 	
+	int l = (MyInterval*1000)%1000000;
 	AlarmInterval.it_interval.tv_sec = 0;
-	AlarmInterval.it_interval.tv_usec = MyInterval*1000;
+	AlarmInterval.it_interval.tv_usec = l;
 	AlarmInterval.it_value.tv_sec = 0;
-	AlarmInterval.it_value.tv_usec = MyInterval*1000;
+	AlarmInterval.it_value.tv_usec = l;
 	if(setitimer(ITIMER_REAL, &AlarmInterval, 0)<0){
 		printf("Timer cant be set\n");
 		exit(1);
