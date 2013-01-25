@@ -23,6 +23,7 @@ struct context_options{
 
 struct itimerval AlarmInterval;
 ucontext_t SchedulerContext;
+void *SignalStack;
 int CurrentContextId = 0;
 
 void thread_exit(){
