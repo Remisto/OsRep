@@ -22,6 +22,10 @@ struct itimerval AlarmInterval;
 ucontext_t SchedulerContext;
 int CurrentContextId = 0;
 
+void thread_exit(){
+	MyTreads[CurrentContextId].ContextStatus = 0;
+}
+
 int thread_create(void(*f)()){
 	int id;
 	for(id = 1; id < NumberOfContexts; id++){
@@ -49,16 +53,11 @@ int thread_create(void(*f)()){
 	return id;
 }
 
-void thread_exit(){
-	MyTreads[CurrentContextId].ContextStatus = 0;
-}
-
-void thread_wait(int zxc){
-	struct timespec nanotime;
-	nanotime.tv_sec = 0;
-	nanotime.tv_nsec = 10000*MyInterval;
-	while (MyTreads[zxc].ContextStatus != 0) {
-		nanosleep(&nanotime, 0);
+void thread_wait(int tid){
+	int l = (MyInterval*1000)%1000000;
+	while (MyTreads[tid].ContextStatus != 0) 
+	{
+		poll(NULL,0,l);
 	}
 }
 
