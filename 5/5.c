@@ -120,20 +120,17 @@ int main(){
 	AlarmInterval.it_interval.tv_usec = MyInterval*1000;
 	AlarmInterval.it_value.tv_sec = 0;
 	AlarmInterval.it_value.tv_usec = MyInterval*1000;
-	setitimer(ITIMER_REAL, &AlarmInterval, 0);
+	if(setitimer(ITIMER_REAL, &AlarmInterval, 0)<0){
+		printf("Timer cant be set\n");
+		exit(1);
+	};
 	
 	signal(SIGALRM, schedul_function); 
 	
-	for(i=0; i<10; i++){
-		tnumber = i;
-		int TreadId[i] = thread_create(my_thread(i));
-		printf("Thread %d created\n", i);
-	}
-	
-	for(i=0; i<10; i++){
-		thread_wait(TreadId[i]);
-		printf("Thread %d stoped\n", TreadId[i]);
-	}
+	int Thread1 = thread_create(thread_1);
+	int Thread2 = thread_create(thread_2);
+	thread_wait(Thread1);
+	thread_wait(Thread2);
 	
 	return 0;
 }
